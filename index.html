@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asistencia</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Registro de Asistencia Web</h1>
+  <h2 id="mensajeError">El patrick terrible puto.</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>RUT</th>
+        <th>Nombre</th>
+        <th>Celular</th>
+        <th>Correo</th>
+        <th>Carrera</th>
+        <th>Institución</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDatos">
+      <!-- Datos se cargan desde Firebase -->
+    </tbody>
+  </table>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+
+  <!-- Lógica de conexión -->
+  <script src="firebase.js"></script>
+</body>
+</html>
