@@ -1,7 +1,7 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 20px;
-  background-color: #f4f4f4;
+  padding: 20px;
+  background-color: #f2f2f2;
 }
 
 h1 {
@@ -9,29 +9,37 @@ h1 {
 }
 
 #mensajeError {
-  color: #555;
-  font-size: 18px;
+  color: red;
 }
 
-#filtroCarrera {
-  margin-bottom: 10px;
-  padding: 5px;
-  width: 300px;
-  font-size: 16px;
+#busqueda {
+  margin-bottom: 15px;
+}
+
+#inputCarrera {
+  padding: 6px;
+  font-size: 14px;
+  width: 250px;
+  margin-right: 15px;
+}
+
+#contador {
+  font-size: 14px;
+  color: #333;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #fff;
+  background-color: white;
 }
 
 th, td {
+  padding: 10px;
   border: 1px solid #ccc;
-  padding: 8px;
   text-align: left;
 }
 
 th {
-  background-color: #eee;
+  background-color: #eaeaea;
 }
