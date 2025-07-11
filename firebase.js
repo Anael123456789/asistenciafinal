@@ -5,45 +5,55 @@ const firebaseConfig = {
   projectId: "asistenciast-e9ff6",
   storageBucket: "asistenciaqr-10cae.appspot.com",
   messagingSenderId: "1023385957521",
-  appId: "1:1023385957521:web:00f39c30ee2aca76503b30",
-  measurementId: "G-S1S306BZFK"
+  appId: "1:1023385957521:web:00f39c30ee2aca76503b30"
 };
 
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const tablaDatos = document.getElementById("tablaDatos");
-const filtroCarrera = document.getElementById("filtroCarrera");
+const db = firebase.database();
 
-function cargarAsistentes(filtro = "") {
-  database.ref("asistentesweb").on("value", (snapshot) => {
-    tablaDatos.innerHTML = "";
+// Carga los datos según el filtro de carrera
+function cargarDatos(carreraFiltro = "") {
+  const tabla = document.getElementById("tablaDatos");
+  const contador = document.getElementById("contador");
+  tabla.innerHTML = "";
+  let total = 0;
 
+  db.ref("asistentesweb").once("value", (snapshot) => {
     snapshot.forEach((childSnapshot) => {
-      const asistente = childSnapshot.val();
-      if (!filtro || asistente.carrera.toLowerCase().includes(filtro.toLowerCase())) {
+      const data = childSnapshot.val();
+      const carrera = data.carrera?.toLowerCase() || "";
+
+      if (
+        carreraFiltro === "" ||
+        carrera.includes(carreraFiltro.toLowerCase())
+      ) {
         const fila = document.createElement("tr");
         fila.innerHTML = `
-          <td>${asistente.rut}</td>
-          <td>${asistente.nombre}</td>
-          <td>${asistente.celular || ""}</td>
-          <td>${asistente.correo || ""}</td>
-          <td>${asistente.carrera || ""}</td>
-          <td>${asistente.institucion || ""}</td>
+          <td>${data.rut || ""}</td>
+          <td>${data.nombre || ""}</td>
+          <td>${data.celular || ""}</td>
+          <td>${data.correo || ""}</td>
+          <td>${data.carrera || ""}</td>
+          <td>${data.institucion || ""}</td>
         `;
-        tablaDatos.appendChild(fila);
+        tabla.appendChild(fila);
+        total++;
       }
     });
+    contador.textContent = `${total} asistentes encontrados`;
   }, (error) => {
-    console.error("Error al leer desde Firebase:", error);
-    document.getElementById("mensajeError").textContent = "Error al conectar con Firebase.";
+    document.getElementById("mensajeError").style.display = "block";
+    console.error("Error al cargar datos:", error);
   });
 }
 
-// Filtrar al escribir en el input
-filtroCarrera.addEventListener("input", () => {
-  const filtro = filtroCarrera.value.trim();
-  cargarAsistentes(filtro);
-});
+// 🔄 Evento en tiempo real: al escribir en el input se actualiza la tabla
+document.addEventListener("DOMContentLoaded", () => {
+  cargarDatos();
 
-// Cargar todos al inicio
-cargarAsistentes();
+  const input = document.getElementById("inputCarrera");
+  input.addEventListener("input", () => {
+    const filtro = input.value.trim();
+    cargarDatos(filtro);
+  });
+});
