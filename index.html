@@ -10,9 +10,16 @@
   <h1>Registro de Asistencia Web</h1>
   <h2 id="mensajeError" style="display:none;">No se pudo conectar con Firebase.</h2>
 
-  <!-- 🔍 Barra de búsqueda -->
   <div id="busqueda">
     <input type="text" id="inputCarrera" placeholder="Filtrar por carrera..." />
+    <select id="selectInstitucion">
+      <option value="">Todas las instituciones</option>
+      <option value="INACAP">INACAP</option>
+      <option value="DUOC UC">DUOC UC</option>
+      <option value="USACH">USACH</option>
+      <option value="UTFSM">UTFSM</option>
+      <option value="U. de Chile">U. de Chile</option>
+    </select>
     <span id="contador">0 asistentes encontrados</span>
   </div>
 
@@ -36,7 +43,56 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 
-  <!-- Conexión y lógica -->
+  <!-- Lógica -->
+  <script src="firebase.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asistencia</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Registro de Asistencia Web</h1>
+  <h2 id="mensajeError" style="display:none;">No se pudo conectar con Firebase.</h2>
+
+  <div id="busqueda">
+    <input type="text" id="inputCarrera" placeholder="Filtrar por carrera..." />
+    <select id="selectInstitucion">
+      <option value="">Todas las instituciones</option>
+      <option value="INACAP">INACAP</option>
+      <option value="DUOC UC">DUOC UC</option>
+      <option value="USACH">USACH</option>
+      <option value="UTFSM">UTFSM</option>
+      <option value="U. de Chile">U. de Chile</option>
+    </select>
+    <span id="contador">0 asistentes encontrados</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>RUT</th>
+        <th>Nombre</th>
+        <th>Celular</th>
+        <th>Correo</th>
+        <th>Carrera</th>
+        <th>Institución</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDatos">
+      <!-- Datos cargados desde Firebase -->
+    </tbody>
+  </table>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+
+  <!-- Lógica -->
   <script src="firebase.js"></script>
 </body>
 </html>
