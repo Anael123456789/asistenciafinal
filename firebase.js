@@ -1,52 +1,49 @@
-// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDQC4Orf4OWr8JuDGrmYvSDRSn6FCT6KoU",
   authDomain: "asistenciaqr-10cae.firebaseapp.com",
-  databaseURL: "https://asistenciaqr-10cae-default-rtdb.firebaseio.com",
-  projectId: "asistenciaqr-10cae",
+  databaseURL: "https://asistenciast-e9ff6-default-rtdb.firebaseio.com/",
+  projectId: "asistenciast-e9ff6",
   storageBucket: "asistenciaqr-10cae.appspot.com",
   messagingSenderId: "1023385957521",
   appId: "1:1023385957521:web:00f39c30ee2aca76503b30",
   measurementId: "G-S1S306BZFK"
 };
 
-// Inicializa Firebase
-try {
-  const app = firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const tablaDatos = document.getElementById("tablaDatos");
+const filtroCarrera = document.getElementById("filtroCarrera");
 
-  const tabla = document.getElementById("tablaDatos");
-  const mensajeError = document.getElementById("mensajeError");
-
+function cargarAsistentes(filtro = "") {
   database.ref("asistentesweb").on("value", (snapshot) => {
-    tabla.innerHTML = "";
-    const datos = snapshot.val();
+    tablaDatos.innerHTML = "";
 
-    if (datos) {
-      mensajeError.style.display = "none";
-      Object.values(datos).forEach(asistente => {
-        const fila = `
-          <tr>
-            <td>${asistente.rut || ""}</td>
-            <td>${asistente.nombre || ""}</td>
-            <td>${asistente.celular || ""}</td>
-            <td>${asistente.correo || ""}</td>
-            <td>${asistente.carrera || ""}</td>
-            <td>${asistente.institucion || ""}</td>
-          </tr>`;
-        tabla.innerHTML += fila;
-      });
-    } else {
-      mensajeError.style.display = "block";
-      mensajeError.textContent = "No hay datos disponibles.";
-    }
+    snapshot.forEach((childSnapshot) => {
+      const asistente = childSnapshot.val();
+      if (!filtro || asistente.carrera.toLowerCase().includes(filtro.toLowerCase())) {
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${asistente.rut}</td>
+          <td>${asistente.nombre}</td>
+          <td>${asistente.celular || ""}</td>
+          <td>${asistente.correo || ""}</td>
+          <td>${asistente.carrera || ""}</td>
+          <td>${asistente.institucion || ""}</td>
+        `;
+        tablaDatos.appendChild(fila);
+      }
+    });
   }, (error) => {
-    mensajeError.style.display = "block";
-    mensajeError.textContent = "Error al conectar a Firebase.";
-    console.error(error);
+    console.error("Error al leer desde Firebase:", error);
+    document.getElementById("mensajeError").textContent = "Error al conectar con Firebase.";
   });
-
-} catch (e) {
-  document.getElementById("mensajeError").style.display = "block";
-  console.error("Firebase no se pudo inicializar:", e);
 }
+
+// Filtrar al escribir en el input
+filtroCarrera.addEventListener("input", () => {
+  const filtro = filtroCarrera.value.trim();
+  cargarAsistentes(filtro);
+});
+
+// Cargar todos al inicio
+cargarAsistentes();
