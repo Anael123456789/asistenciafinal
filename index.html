@@ -8,9 +8,13 @@
 </head>
 <body>
   <h1>Registro de Asistencia Web</h1>
-  <h2 id="mensajeError">Mostrando asistentes desde Firebase</h2>
+  <h2 id="mensajeError" style="display:none;">No se pudo conectar con Firebase.</h2>
 
-  <input type="text" id="filtroCarrera" placeholder="Filtrar por carrera..." />
+  <!-- 🔍 Barra de búsqueda -->
+  <div id="busqueda">
+    <input type="text" id="inputCarrera" placeholder="Filtrar por carrera..." />
+    <span id="contador">0 asistentes encontrados</span>
+  </div>
 
   <table>
     <thead>
@@ -24,7 +28,7 @@
       </tr>
     </thead>
     <tbody id="tablaDatos">
-      <!-- Datos se cargan desde Firebase -->
+      <!-- Datos cargados desde Firebase -->
     </tbody>
   </table>
 
@@ -32,7 +36,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 
-  <!-- Lógica de conexión -->
+  <!-- Conexión y lógica -->
   <script src="firebase.js"></script>
 </body>
 </html>
