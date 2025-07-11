@@ -1,19 +1,18 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDQC4Orf4OWr8JuDGrmYvSDRSn6FCT6KoU",
-  authDomain: "asistenciaqr-10cae.firebaseapp.com",
+  authDomain: "asistenciast-e9ff6.firebaseapp.com",
   databaseURL: "https://asistenciast-e9ff6-default-rtdb.firebaseio.com/",
   projectId: "asistenciast-e9ff6",
-  storageBucket: "asistenciaqr-10cae.appspot.com",
+  storageBucket: "asistenciast-e9ff6.appspot.com",
   messagingSenderId: "1023385957521",
   appId: "1:1023385957521:web:00f39c30ee2aca76503b30"
 };
 
-// Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Función para cargar datos con filtro por carrera
-function cargarDatos(carreraFiltro = "") {
+// 🔄 Cargar datos con filtros
+function cargarDatos(carreraFiltro = "", institucionFiltro = "") {
   const tabla = document.getElementById("tablaDatos");
   const contador = document.getElementById("contador");
   tabla.innerHTML = "";
@@ -23,10 +22,11 @@ function cargarDatos(carreraFiltro = "") {
     snapshot.forEach((childSnapshot) => {
       const data = childSnapshot.val();
       const carrera = data.carrera?.toLowerCase() || "";
+      const institucion = data.institucion?.toLowerCase() || "";
 
       if (
-        carreraFiltro === "" ||
-        carrera.includes(carreraFiltro.toLowerCase())
+        (carreraFiltro === "" || carrera.includes(carreraFiltro.toLowerCase())) &&
+        (institucionFiltro === "" || institucion === institucionFiltro.toLowerCase())
       ) {
         const fila = document.createElement("tr");
         fila.innerHTML = `
@@ -48,18 +48,23 @@ function cargarDatos(carreraFiltro = "") {
   });
 }
 
-// Filtro en tiempo real
+// 🧠 Listeners
 document.addEventListener("DOMContentLoaded", () => {
   cargarDatos();
 
-  const input = document.getElementById("inputCarrera");
-  input.addEventListener("input", () => {
-    const filtro = input.value.trim();
-    cargarDatos(filtro);
+  const inputCarrera = document.getElementById("inputCarrera");
+  const selectInstitucion = document.getElementById("selectInstitucion");
+
+  inputCarrera.addEventListener("input", () => {
+    cargarDatos(inputCarrera.value.trim(), selectInstitucion.value);
+  });
+
+  selectInstitucion.addEventListener("change", () => {
+    cargarDatos(inputCarrera.value.trim(), selectInstitucion.value);
   });
 });
 
-// Función para subir 50 asistentes falsos
+// ✅ Puedes llamar esta función desde consola para test
 function generarYSubirEjemplos() {
   const carreras = ["Ingeniería", "Administración", "Enfermería", "Diseño", "Psicología"];
   const instituciones = ["INACAP", "DUOC UC", "USACH", "UTFSM", "U. de Chile"];
@@ -73,18 +78,9 @@ function generarYSubirEjemplos() {
     const carrera = carreras[Math.floor(Math.random() * carreras.length)];
     const institucion = instituciones[Math.floor(Math.random() * instituciones.length)];
 
-    const nuevoAsistente = {
-      rut,
-      nombre,
-      celular,
-      correo,
-      carrera,
-      institucion
-    };
-
-    ref.push(nuevoAsistente);
+    ref.push({ rut, nombre, celular, correo, carrera, institucion });
   }
 
   alert("✅ 50 registros de ejemplo han sido subidos.");
-  cargarDatos(); // refresca la tabla
+  cargarDatos();
 }
