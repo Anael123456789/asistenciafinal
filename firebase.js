@@ -11,22 +11,19 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Generar 50 asistentes de ejemplo local
+// ▶️ 50 registros de ejemplo LOCAL (no se suben a Firebase)
 const carreras = ["Ingeniería", "Administración", "Enfermería", "Diseño", "Psicología"];
 const instituciones = ["INACAP", "DUOC UC", "USACH", "UTFSM", "U. de Chile"];
 
-const asistentesEjemplo = Array.from({ length: 50 }, (_, i) => {
-  return {
-    rut: `${Math.floor(10000000 + Math.random() * 89999999)}-${Math.floor(Math.random() * 10)}`,
-    nombre: `Estudiante ${i + 1}`,
-    celular: `+569${Math.floor(10000000 + Math.random() * 89999999)}`,
-    correo: `estudiante${i + 1}@ejemplo.com`,
-    carrera: carreras[Math.floor(Math.random() * carreras.length)],
-    institucion: instituciones[Math.floor(Math.random() * instituciones.length)]
-  };
-});
+const asistentesEjemplo = Array.from({ length: 50 }, (_, i) => ({
+  rut: `1111111${i}-K`,
+  nombre: `Ejemplo ${i + 1}`,
+  celular: `+5691234567${i % 10}`,
+  correo: `ejemplo${i + 1}@correo.com`,
+  carrera: carreras[i % carreras.length],
+  institucion: instituciones[i % instituciones.length]
+}));
 
-// Cargar datos desde Firebase y combinar con ejemplos
 function cargarDatos(filtroCarrera = "") {
   const tabla = document.getElementById("tablaDatos");
   const contador = document.getElementById("contador");
@@ -38,35 +35,35 @@ function cargarDatos(filtroCarrera = "") {
     if (filtroCarrera === "" || carrera.includes(filtroCarrera.toLowerCase())) {
       const fila = document.createElement("tr");
       fila.innerHTML = `
-        <td>${data.rut || ""}</td>
-        <td>${data.nombre || ""}</td>
-        <td>${data.celular || ""}</td>
-        <td>${data.correo || ""}</td>
-        <td>${data.carrera || ""}</td>
-        <td>${data.institucion || ""}</td>
+        <td>${data.rut}</td>
+        <td>${data.nombre}</td>
+        <td>${data.celular}</td>
+        <td>${data.correo}</td>
+        <td>${data.carrera}</td>
+        <td>${data.institucion}</td>
       `;
       tabla.appendChild(fila);
       total++;
     }
   };
 
-  // Primero los locales
+  // Primero los registros locales
   asistentesEjemplo.forEach(agregarFila);
 
-  // Luego los reales desde Firebase
-  db.ref("asistentesweb").once("value", (snapshot) => {
+  // Luego los de Firebase
+  db.ref("asistentesweb").once("value").then((snapshot) => {
     snapshot.forEach((child) => agregarFila(child.val()));
     contador.textContent = `${total} asistentes encontrados`;
-  }, (error) => {
+  }).catch((error) => {
     document.getElementById("mensajeError").style.display = "block";
-    console.error("Error al cargar datos:", error);
-    contador.textContent = `${total} asistentes encontrados (solo ejemplos)`;
+    contador.textContent = `${total} asistentes encontrados (sin conexión a Firebase)`;
+    console.error("Firebase error:", error);
   });
 }
 
-// Escuchar filtro
 document.addEventListener("DOMContentLoaded", () => {
   cargarDatos();
-  const filtro = document.getElementById("selectCarrera");
-  filtro.addEventListener("change", () => cargarDatos(filtro.value));
+  document.getElementById("selectCarrera").addEventListener("change", (e) => {
+    cargarDatos(e.target.value);
+  });
 });
