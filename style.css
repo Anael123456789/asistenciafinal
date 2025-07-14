@@ -14,11 +14,7 @@ h1 {
 
 select {
   padding: 8px;
-  margin-right: 10px;
-}
-
-#contador {
-  font-weight: bold;
+  width: 300px;
 }
 
 table {
