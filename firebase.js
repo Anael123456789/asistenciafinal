@@ -1,3 +1,4 @@
+// Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDQC4Orf4OWr8JuDGrmYvSDRSn6FCT6KoU",
   authDomain: "asistenciaqr-10cae.firebaseapp.com",
@@ -11,7 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ▶️ 50 registros de ejemplo LOCAL (no se suben a Firebase)
+// 📄 Datos de ejemplo locales (50)
 const carreras = ["Ingeniería", "Administración", "Enfermería", "Diseño", "Psicología"];
 const instituciones = ["INACAP", "DUOC UC", "USACH", "UTFSM", "U. de Chile"];
 
@@ -24,6 +25,7 @@ const asistentesEjemplo = Array.from({ length: 50 }, (_, i) => ({
   institucion: instituciones[i % instituciones.length]
 }));
 
+// Función para mostrar datos
 function cargarDatos(filtroCarrera = "") {
   const tabla = document.getElementById("tablaDatos");
   const contador = document.getElementById("contador");
@@ -47,20 +49,21 @@ function cargarDatos(filtroCarrera = "") {
     }
   };
 
-  // Primero los registros locales
+  // Mostrar registros de ejemplo
   asistentesEjemplo.forEach(agregarFila);
 
-  // Luego los de Firebase
+  // Luego intentar cargar desde Firebase
   db.ref("asistentesweb").once("value").then((snapshot) => {
     snapshot.forEach((child) => agregarFila(child.val()));
     contador.textContent = `${total} asistentes encontrados`;
   }).catch((error) => {
     document.getElementById("mensajeError").style.display = "block";
-    contador.textContent = `${total} asistentes encontrados (sin conexión a Firebase)`;
+    contador.textContent = `${total} asistentes encontrados (modo local)`;
     console.error("Firebase error:", error);
   });
 }
 
+// Inicialización al cargar
 document.addEventListener("DOMContentLoaded", () => {
   cargarDatos();
   document.getElementById("selectCarrera").addEventListener("change", (e) => {
