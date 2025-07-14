@@ -9,12 +9,16 @@ h1 {
 }
 
 #busqueda {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 select {
   padding: 8px;
   margin-right: 10px;
+}
+
+#contador {
+  font-weight: bold;
 }
 
 table {
