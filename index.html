@@ -10,6 +10,7 @@
   <h1>Registro de Asistencia Web</h1>
   <h2 id="mensajeError" style="display:none;">No se pudo conectar con Firebase.</h2>
 
+  <!-- Menú de filtro -->
   <div id="busqueda">
     <select id="selectCarrera">
       <option value="">Todas las carreras</option>
@@ -22,6 +23,7 @@
     <span id="contador">0 asistentes encontrados</span>
   </div>
 
+  <!-- Tabla de datos -->
   <table>
     <thead>
       <tr>
@@ -36,11 +38,10 @@
     <tbody id="tablaDatos"></tbody>
   </table>
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
-
-  <!-- Tu lógica -->
+  <!-- Script principal -->
   <script src="firebase.js"></script>
 </body>
 </html>
