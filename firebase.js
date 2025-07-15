@@ -12,61 +12,78 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ✅ Datos locales (50 registros)
-const carreras = ["Ingeniería", "Administración", "Enfermería", "Diseño", "Psicología"];
-const instituciones = ["INACAP", "DUOC UC", "USACH", "UTFSM", "U. de Chile"];
+// ✅ Solo 3 registros de ejemplo (locales)
+const asistentesEjemplo = [
+  {
+    rut: "12345678-9",
+    nombre: "Ana López",
+    celular: "+56911111111",
+    correo: "ana@example.com",
+    carrera: "Ingeniería",
+    institucion: "INACAP"
+  },
+  {
+    rut: "23456789-0",
+    nombre: "Carlos Soto",
+    celular: "+56922222222",
+    correo: "carlos@example.com",
+    carrera: "Psicología",
+    institucion: "DUOC UC"
+  },
+  {
+    rut: "34567890-1",
+    nombre: "María Torres",
+    celular: "+56933333333",
+    correo: "maria@example.com",
+    carrera: "Administración",
+    institucion: "U. de Chile"
+  }
+];
 
-const asistentesEjemplo = Array.from({ length: 50 }, (_, i) => ({
-  rut: `1111111${i}-K`,
-  nombre: `Ejemplo ${i + 1}`,
-  celular: `+5691234567${i % 10}`,
-  correo: `ejemplo${i + 1}@correo.com`,
-  carrera: carreras[i % carreras.length],
-  institucion: instituciones[i % instituciones.length]
-}));
-
-// ✅ Cargar datos
+// ✅ Función para cargar datos
 function cargarDatos(filtroCarrera = "") {
   const tabla = document.getElementById("tablaDatos");
   const contador = document.getElementById("contador");
+  const mensajeError = document.getElementById("mensajeError");
+
   tabla.innerHTML = "";
   let total = 0;
 
-  const agregarFila = (data) => {
-    const carrera = (data.carrera || "").toLowerCase();
+  const agregarFila = (persona) => {
+    const carrera = persona.carrera?.toLowerCase() || "";
     if (filtroCarrera === "" || carrera.includes(filtroCarrera.toLowerCase())) {
       const fila = document.createElement("tr");
       fila.innerHTML = `
-        <td>${data.rut}</td>
-        <td>${data.nombre}</td>
-        <td>${data.celular}</td>
-        <td>${data.correo}</td>
-        <td>${data.carrera}</td>
-        <td>${data.institucion}</td>
+        <td>${persona.rut}</td>
+        <td>${persona.nombre}</td>
+        <td>${persona.celular}</td>
+        <td>${persona.correo}</td>
+        <td>${persona.carrera}</td>
+        <td>${persona.institucion}</td>
       `;
       tabla.appendChild(fila);
       total++;
     }
   };
 
-  // Mostrar ejemplos locales primero
+  // Cargar ejemplos locales siempre
   asistentesEjemplo.forEach(agregarFila);
 
   // Intentar cargar desde Firebase
   db.ref("asistentesweb").once("value").then(snapshot => {
     snapshot.forEach(child => agregarFila(child.val()));
     contador.textContent = `${total} asistentes encontrados`;
-  }).catch(err => {
-    document.getElementById("mensajeError").style.display = "block";
-    contador.textContent = `${total} asistentes encontrados (modo local)`;
-    console.error("Firebase error:", err);
+  }).catch(error => {
+    mensajeError.style.display = "block";
+    contador.textContent = `${total} asistentes encontrados (solo locales)`;
+    console.error("Error Firebase:", error);
   });
 }
 
-// ✅ Evento al iniciar
+// ✅ Ejecutar al cargar
 document.addEventListener("DOMContentLoaded", () => {
   cargarDatos();
-  document.getElementById("selectCarrera").addEventListener("change", (e) => {
+  document.getElementById("selectCarrera").addEventListener("change", e => {
     cargarDatos(e.target.value);
   });
 });
