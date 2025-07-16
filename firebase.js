@@ -1,4 +1,4 @@
-// ✅ Configuración de Firebase
+// Configuración Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDQC4Orf4OWr8JuDGrmYvSDRSn6FCT6KoU",
   authDomain: "asistenciaqr-10cae.firebaseapp.com",
@@ -12,7 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// ✅ Solo 3 registros de ejemplo (locales)
+// Ejemplos locales (funcionan sin Firebase)
 const asistentesEjemplo = [
   {
     rut: "12345678-9",
@@ -40,7 +40,7 @@ const asistentesEjemplo = [
   }
 ];
 
-// ✅ Función para cargar datos
+// Función para mostrar datos
 function cargarDatos(filtroCarrera = "") {
   const tabla = document.getElementById("tablaDatos");
   const contador = document.getElementById("contador");
@@ -49,41 +49,40 @@ function cargarDatos(filtroCarrera = "") {
   tabla.innerHTML = "";
   let total = 0;
 
-  const agregarFila = (persona) => {
-    const carrera = persona.carrera?.toLowerCase() || "";
+  const agregarFila = (data) => {
+    const carrera = (data.carrera || "").toLowerCase();
     if (filtroCarrera === "" || carrera.includes(filtroCarrera.toLowerCase())) {
       const fila = document.createElement("tr");
       fila.innerHTML = `
-        <td>${persona.rut}</td>
-        <td>${persona.nombre}</td>
-        <td>${persona.celular}</td>
-        <td>${persona.correo}</td>
-        <td>${persona.carrera}</td>
-        <td>${persona.institucion}</td>
+        <td>${data.rut}</td>
+        <td>${data.nombre}</td>
+        <td>${data.celular}</td>
+        <td>${data.correo}</td>
+        <td>${data.carrera}</td>
+        <td>${data.institucion}</td>
       `;
       tabla.appendChild(fila);
       total++;
     }
   };
 
-  // Cargar ejemplos locales siempre
+  // Locales primero
   asistentesEjemplo.forEach(agregarFila);
 
-  // Intentar cargar desde Firebase
+  // Firebase si está disponible
   db.ref("asistentesweb").once("value").then(snapshot => {
     snapshot.forEach(child => agregarFila(child.val()));
     contador.textContent = `${total} asistentes encontrados`;
-  }).catch(error => {
+  }).catch(() => {
     mensajeError.style.display = "block";
-    contador.textContent = `${total} asistentes encontrados (solo locales)`;
-    console.error("Error Firebase:", error);
+    contador.textContent = `${total} asistentes encontrados (modo local)`;
   });
 }
 
-// ✅ Ejecutar al cargar
+// Iniciar al cargar
 document.addEventListener("DOMContentLoaded", () => {
   cargarDatos();
-  document.getElementById("selectCarrera").addEventListener("change", e => {
+  document.getElementById("selectCarrera").addEventListener("change", (e) => {
     cargarDatos(e.target.value);
   });
 });
