@@ -14,10 +14,16 @@
     <label for="selectCarrera">Filtrar por carrera:</label>
     <select id="selectCarrera">
       <option value="">Todas</option>
-      <option value="Ingeniería">Ingeniería</option>
-      <option value="Administración">Administración</option>
-      <option value="Psicología">Psicología</option>
     </select>
+
+    <label for="selectInstitucion">Filtrar por institución:</label>
+    <select id="selectInstitucion">
+      <option value="">Todas</option>
+    </select>
+
+    <label for="ordenLetra">Ordenar por apellido (letra):</label>
+    <input type="text" id="ordenLetra" maxlength="1" placeholder="Ej: A" />
+
     <span id="contador">0 asistentes encontrados</span>
   </div>
 
@@ -35,7 +41,7 @@
     <tbody id="tablaDatos"></tbody>
   </table>
 
-  <!-- Firebase SDK (Compat) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
