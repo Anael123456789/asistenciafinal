@@ -12,7 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Ejemplos locales (funcionan sin Firebase)
+// Datos locales (fallback)
 const asistentesEjemplo = [
   {
     rut: "12345678-9",
@@ -36,53 +36,94 @@ const asistentesEjemplo = [
     celular: "+56933333333",
     correo: "maria@example.com",
     carrera: "Administración",
-    institucion: "U. de Chile"
+    institucion: "Universidad de Chile"
   }
 ];
 
-// Función para mostrar datos
-function cargarDatos(filtroCarrera = "") {
+let datosCompletos = [];
+
+function cargarDatos() {
   const tabla = document.getElementById("tablaDatos");
-  const contador = document.getElementById("contador");
   const mensajeError = document.getElementById("mensajeError");
 
   tabla.innerHTML = "";
-  let total = 0;
+  datosCompletos = [];
 
-  const agregarFila = (data) => {
-    const carrera = (data.carrera || "").toLowerCase();
-    if (filtroCarrera === "" || carrera.includes(filtroCarrera.toLowerCase())) {
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${data.rut}</td>
-        <td>${data.nombre}</td>
-        <td>${data.celular}</td>
-        <td>${data.correo}</td>
-        <td>${data.carrera}</td>
-        <td>${data.institucion}</td>
-      `;
-      tabla.appendChild(fila);
-      total++;
-    }
+  const agregarDatos = (data) => {
+    datosCompletos.push(data);
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+      <td>${data.rut}</td>
+      <td>${data.nombre}</td>
+      <td>${data.celular}</td>
+      <td>${data.correo}</td>
+      <td>${data.carrera}</td>
+      <td>${data.institucion}</td>
+    `;
+    tabla.appendChild(fila);
   };
 
-  // Locales primero
-  asistentesEjemplo.forEach(agregarFila);
+  // Local
+  asistentesEjemplo.forEach(agregarDatos);
 
-  // Firebase si está disponible
+  // Firebase
   db.ref("asistentesweb").once("value").then(snapshot => {
-    snapshot.forEach(child => agregarFila(child.val()));
-    contador.textContent = `${total} asistentes encontrados`;
+    snapshot.forEach(child => agregarDatos(child.val()));
+    actualizarFiltros();
+    aplicarFiltros();
   }).catch(() => {
     mensajeError.style.display = "block";
-    contador.textContent = `${total} asistentes encontrados (modo local)`;
+    actualizarFiltros();
+    aplicarFiltros();
   });
 }
 
-// Iniciar al cargar
+function actualizarFiltros() {
+  const selectCarrera = document.getElementById("selectCarrera");
+  const selectInstitucion = document.getElementById("selectInstitucion");
+
+  const carreras = [...new Set(datosCompletos.map(d => d.carrera).filter(Boolean))];
+  const instituciones = [...new Set(datosCompletos.map(d => d.institucion).filter(Boolean))];
+
+  selectCarrera.innerHTML = `<option value="">Todas</option>` + carreras.sort().map(c => `<option value="${c}">${c}</option>`).join("");
+  selectInstitucion.innerHTML = `<option value="">Todas</option>` + instituciones.sort().map(i => `<option value="${i}">${i}</option>`).join("");
+}
+
+function aplicarFiltros() {
+  const carreraFiltro = document.getElementById("selectCarrera").value.toLowerCase();
+  const institucionFiltro = document.getElementById("selectInstitucion").value.toLowerCase();
+  const letra = document.getElementById("ordenLetra").value.toLowerCase();
+  const tabla = document.getElementById("tablaDatos");
+  const contador = document.getElementById("contador");
+
+  let total = 0;
+  const filas = tabla.querySelectorAll("tr");
+
+  filas.forEach(fila => {
+    const nombre = fila.children[1].textContent.toLowerCase();
+    const carrera = fila.children[4].textContent.toLowerCase();
+    const institucion = fila.children[5].textContent.toLowerCase();
+
+    const apellido = nombre.split(" ")[1] || "";
+    const coincideCarrera = !carreraFiltro || carrera.includes(carreraFiltro);
+    const coincideInstitucion = !institucionFiltro || institucion.includes(institucionFiltro);
+    const coincideLetra = !letra || apellido.startsWith(letra);
+
+    if (coincideCarrera && coincideInstitucion && coincideLetra) {
+      fila.style.display = "";
+      total++;
+    } else {
+      fila.style.display = "none";
+    }
+  });
+
+  contador.textContent = `${total} asistentes encontrados`;
+}
+
+// Eventos
 document.addEventListener("DOMContentLoaded", () => {
   cargarDatos();
-  document.getElementById("selectCarrera").addEventListener("change", (e) => {
-    cargarDatos(e.target.value);
-  });
+  document.getElementById("selectCarrera").addEventListener("change", aplicarFiltros);
+  document.getElementById("selectInstitucion").addEventListener("change", aplicarFiltros);
+  document.getElementById("ordenLetra").addEventListener("input", aplicarFiltros);
 });
